@@ -13,6 +13,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: Globals
     var webView: WKWebView!
+    var tempView: WKWebView!
     var progressBar : UIProgressView!
 
     override func viewDidLoad() {
@@ -82,9 +83,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         // make it possible to detect the version of the app
         webView.evaluateJavaScript("app_version = '" + app_version + "';")
         if #available(iOS 9.0, *) {
-            webView.evaluateJavaScript("navigator.userAgent", completionHandler: { (result, error) in
+            tempView = WKWebView(frame: .zero)
+            tempView.evaluateJavaScript("navigator.userAgent", completionHandler: { (result, error) in
                 if let resultObject = result {
                     self.webView.customUserAgent = (String(describing: resultObject) + " " + app_version)
+                    self.tempView = nil
                 }
             })
         }
