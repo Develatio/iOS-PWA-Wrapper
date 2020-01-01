@@ -4,7 +4,7 @@ import UIKit
 let appTitle = "iOS PWA Wrapper"
 let webAppUrl = URL(string: "https://develat.io")
 let allowedOrigin = "develat.io"
-let app_version = "iOSApp/1.0.0"
+let app_version = "iOSApp/" + (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String)
 
 // UI Settings
 let changeAppTitleToPageTitle = false
