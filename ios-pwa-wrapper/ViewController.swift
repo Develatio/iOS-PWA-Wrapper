@@ -2,7 +2,7 @@ import UIKit
 import WebKit
 
 class ViewController: UIViewController, UIScrollViewDelegate {
-    
+
     // MARK: Outlets
     @IBOutlet weak var webViewContainer: UIView!
     @IBOutlet weak var offlineView: UIView!
@@ -10,7 +10,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
     @IBOutlet weak var offlineButton: UIButton!
     @IBOutlet weak var activityIndicatorView: UIView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    
+
     // MARK: Globals
     var webView: WKWebView!
     var tempView: WKWebView!
@@ -34,7 +34,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         webViewContainer.isHidden = false
         loadAppUrl()
     }
-    
+
     // Observers for updating UI
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if (keyPath == #keyPath(WKWebView.isLoading)) {
@@ -54,7 +54,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
             progressBar.progress = Float(webView.estimatedProgress)
         }
     }
-    
+
     // Initialize WKWebView
     func setupWebView() {
         // set up webview
@@ -66,20 +66,19 @@ class ViewController: UIViewController, UIScrollViewDelegate {
 
         // Disable overscroll
         webView.scrollView.bounces = false
-        
+
         // Disable zooming
         webView.scrollView.delegate = self
-        webView.navigationDelegate = self
-        
+
         // Disable swiping
         webView.allowsBackForwardNavigationGestures = false
-        
+
         // settings
         webView.configuration.preferences.javaScriptEnabled = true
         if #available(iOS 10.0, *) {
             webView.configuration.ignoresViewportScaleLimits = false
         }
-        
+
         // make it possible to detect the version of the app
         webView.evaluateJavaScript("app_version = '" + app_version + "';")
         if #available(iOS 9.0, *) {
@@ -96,11 +95,11 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.isLoading), options: NSKeyValueObservingOptions.new, context: nil)
         webView.addObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), options: NSKeyValueObservingOptions.new, context: nil)
     }
-    
+
     func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
         scrollView.pinchGestureRecognizer?.isEnabled = false
     }
-    
+
     // Initialize UI elements
     // call after WebView has been initialized
     func setupUI() {
@@ -112,16 +111,16 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         progressBar.progress = 0.0
         progressBar.tintColor = progressBarColor
         webView.addSubview(progressBar)
-        
+
         // activity indicator
         activityIndicator.color = activityIndicatorColor
         activityIndicator.startAnimating()
-        
+
         // offline container
         offlineIcon.tintColor = offlineIconColor
         offlineButton.tintColor = buttonColor
         offlineView.isHidden = true
-        
+
         // setup navigation bar
         if (forceLargeTitle) {
             if #available(iOS 11.0, *) {
@@ -131,7 +130,7 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         if (useLightStatusBarStyle) {
             self.navigationController?.navigationBar.barStyle = UIBarStyle.black
         }
-        
+
         /*
         // @DEBUG: test offline view
         offlineView.isHidden = false
@@ -144,14 +143,14 @@ class ViewController: UIViewController, UIScrollViewDelegate {
         let urlRequest = URLRequest(url: webAppUrl!)
         webView.load(urlRequest)
     }
-    
+
     // Initialize App and start loading
     func setupApp() {
         setupWebView()
         setupUI()
         loadAppUrl()
     }
-    
+
     // Cleanup
     deinit {
         webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.isLoading))
@@ -195,7 +194,7 @@ extension ViewController: WKUIDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         if let requestUrl = navigationAction.request.url {
             if let requestHost = requestUrl.host {
-                if (requestHost.range(of: allowedOrigin) != nil ) {
+                if (allowedOrigins.filter({ requestHost.range(of: $0) != nil }).count > 0) {
                     decisionHandler(.allow)
                 } else {
                     decisionHandler(.cancel)

@@ -3,7 +3,7 @@ import UIKit
 // Basic App-/WebView-configuration
 let appTitle = "iOS PWA Wrapper"
 let webAppUrl = URL(string: "https://develat.io")
-let allowedOrigin = "develat.io"
+let allowedOrigins = ["develat.io", "google.com"]
 let app_version = "iOSApp/" + (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as! String)
 
 // UI Settings
